@@ -6,8 +6,11 @@ const app = express();
 
 const port = 3000;
 
-app.use(morgan('tiny'));
-app.use(express.raw({ type: '*/*', limit: '100mb'}));
+// app.use(morgan('tiny'));
+// app.use(express.raw({ type: '*/*', limit: '100mb'}));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.raw({ type: '*/*', limit: '100mb' }));
 
 
 app.get('/*', (req, res) => {
@@ -17,8 +20,16 @@ app.get('/*', (req, res) => {
 
 app.post('/urlback', (req, res) => {
     res.status(200);
-    console.log(req.body.toString()); // Muestra el cuerpo de la solicitud como texto sin procesar
-    res.send(req.body);
+    // console.log(req.body.toString()); // Muestra el cuerpo de la solicitud como texto sin procesar
+    // res.send(req.body);
+
+    let bodyContent;
+    if (Buffer.isBuffer(req.body)) {
+        bodyContent = req.body.toString('utf-8');
+    } else {
+        bodyContent = JSON.stringify(req.body);
+    }
+    console.log(bodyContent);
 })
 
 app.post('/urlout', (req, res) => {
